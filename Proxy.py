@@ -120,7 +120,12 @@ while True:
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
-
+    clientSocket.sendall("HTTP/1.1 200 OK\r\n") 
+    clientSocket.sendall("Content-Length: " + str(len(cacheData)) + "\r\n".encode("utf-8"))
+    clientSocket.sendall("\r\n")
+    
+    for data in cacheData:
+      clientSocket.sendall(data.encode("utf-8"))
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
     print ('Sent to the client:')
@@ -131,7 +136,7 @@ while True:
     # Create a socket to connect to origin server
     # and store in originServerSocket
     # ~~~~ INSERT CODE ~~~~
-
+    originServerSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     # ~~~~ END CODE INSERT ~~~~
 
     print ('Connecting to:\t\t' + hostname + '\n')
@@ -140,7 +145,7 @@ while True:
       address = socket.gethostbyname(hostname)
       # Connect to the origin server
       # ~~~~ INSERT CODE ~~~~
-      originServerSocket.connect((address, 8080))
+      originServerSocket.connect((address, 80))  # Port 80 is the default port for HTTP, not 8080!!!
       # ~~~~ END CODE INSERT ~~~~
       print ('Connected to origin Server')
 
