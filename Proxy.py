@@ -41,7 +41,7 @@ except:
 try:
   # Listen on the server socket
   # ~~~~ INSERT CODE ~~~~
-  server_socket.listen(3)
+  server_socket.listen(5)
   print("Listening on port " + str(proxyPort))
   # ~~~~ END CODE INSERT ~~~~
   print ('Listening to socket')
