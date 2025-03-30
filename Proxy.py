@@ -200,10 +200,15 @@ while True:
 
       # Save origin server response in the cache file
       # ~~~~ INSERT CODE ~~~~
-      with open(cacheLocation, 'wb') as cacheFile:
-        cacheFile.write(response)
+      try:
+        sanitized_path = re.sub(r'[?&:<>|*]', '_', cacheLocation)
+        with open(sanitized_path, 'wb') as cacheFile:
+          cacheFile.write(response)
 
-      print ("Response saved to cache file")
+        print ("Response saved to cache file")
+      
+      except OSError as err:
+        print("Failed to save response to cache file: " + sanitized_path + " details: " + {err.strerror})
       # ~~~~ END CODE INSERT ~~~~
       cacheFile.close()
       print ('cache file closed')
