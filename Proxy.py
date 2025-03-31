@@ -121,13 +121,13 @@ while True:
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
     clientSocket.sendall("HTTP/1.1 200 OK\r\n") 
-    clientSocket.sendall("Content-Type: text/html\r\n".encode("utf-8"))  # Content-Type header is nessary
-    clientSocket.sendall("Content-Length: " + str(len(cacheData)) + "\r\n".encode("utf-8"))
-    clientSocket.sendall("Connection: close\r\n".encode("utf-8"))  # Connection header is nessary
+    clientSocket.sendall("Content-Type: text/html\r\n".encode())  # Content-Type header is nessary
+    clientSocket.sendall("Content-Length: " + str(len(cacheData)) + "\r\n".encode())
+    clientSocket.sendall("Connection: close\r\n".encode())  # Connection header is nessary
     clientSocket.sendall("\r\n")
     
     for data in cacheData:
-      clientSocket.sendall(data.encode("utf-8"))
+      clientSocket.sendall(data.encode())
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
     print ('Sent to the client:')
@@ -182,7 +182,15 @@ while True:
 
       # Get the response from the origin server
       # ~~~~ INSERT CODE ~~~~
-      response = originServerSocket.recv(BUFFER_SIZE)
+      # response = originServerSocket.recv(BUFFER_SIZE)  # just receive response data from origin server, cannot redirect
+      response = b''
+
+      while True:
+        data = originServerSocket.recv(BUFFER_SIZE)
+        if not data:
+          break
+        response += data
+
       print("Response received from origin server")
       # ~~~~ END CODE INSERT ~~~~
 
@@ -201,14 +209,14 @@ while True:
       # Save origin server response in the cache file
       # ~~~~ INSERT CODE ~~~~
       try:
-        sanitized_path = re.sub(r'[?&:<>|*]', '_', cacheLocation)
+        sanitized_path = re.sub(r'[^\w\-_.]', '_', cacheLocation)
         with open(sanitized_path, 'wb') as cacheFile:
           cacheFile.write(response)
 
         print ("Response saved to cache file")
       
       except OSError as err:
-        print("Failed to save response to cache file: " + sanitized_path + " details: " + {err.strerror})
+        print("Failed to save response to cache file: " + cacheLocation + " details: " + {err.strerror})
       # ~~~~ END CODE INSERT ~~~~
       cacheFile.close()
       print ('cache file closed')
